@@ -398,7 +398,7 @@ function updateBalance(){
   var left=x+4;var diff=left-9;
   document.getElementById('balX').textContent=x;
   document.getElementById('leftVal').textContent=left;
-  var angle=diff*3;if(angle>14)angle=14;if(angle<-14)angle=-14;
+  var angle=-diff*3;if(angle>14)angle=14;if(angle<-14)angle=-14;
   document.getElementById('beamGroup').setAttribute('transform','rotate('+angle+' 200 86)');
   var st=document.getElementById('balStatus');
   if(diff===0){st.innerHTML='<span class="benar">SEIMBANG! 🎉 x = 5 memang membuat ruas kiri sama dengan ruas kanan: 5 + 4 = 9.</span>';}
