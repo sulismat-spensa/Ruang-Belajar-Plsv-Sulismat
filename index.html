@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ruang Belajar Spensa — PLSV</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--laut:#0b5e8f;--laut2:#0e86c8;--jingga:#ff8c1a;--kuning:#ffc61a;--bg:#eaf5fb;--gelap:#17323f;--putih:#ffffff;--hijau:#1e9e62;--merah:#d64545}
+body{font-family:Verdana,Geneva,'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--gelap);line-height:1.55}
+header{background:linear-gradient(135deg,var(--laut),var(--laut2));color:#fff;padding:22px 16px 16px;text-align:center}
+header h1{font-size:1.7rem;letter-spacing:.5px}
+header p{opacity:.95;font-size:.95rem}
+.lencana{display:inline-block;background:var(--kuning);color:#5c3d00;font-weight:bold;padding:3px 14px;border-radius:999px;font-size:.8rem;margin-bottom:8px}
+nav{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;background:#fff;padding:10px;position:sticky;top:0;z-index:20;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+nav button{flex:1 1 150px;max-width:230px;padding:12px 8px;font-size:1rem;border:2px solid var(--laut);background:#fff;color:var(--laut);border-radius:12px;cursor:pointer;font-weight:bold}
+nav button.aktif{background:var(--laut);color:#fff}
+main{max-width:980px;margin:0 auto;padding:18px 14px 40px}
+.tampilan{display:none}
+.tampilan.aktif{display:block}
+.kartu{background:var(--putih);border-radius:18px;padding:20px;margin-bottom:16px;box-shadow:0 3px 10px rgba(11,94,143,.10)}
+h2{color:var(--laut);margin-bottom:8px;font-size:1.35rem}
+h3{color:var(--laut);margin:12px 0 6px}
+.pintu{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:640px){.pintu{grid-template-columns:1fr 1fr}}
+.pintu .kartu{text-align:center;border-top:8px solid var(--jingga)}
+.pintu .kartu.biru{border-top-color:var(--laut2)}
+.ikon{font-size:3rem;display:block;margin-bottom:6px}
+.btn{display:inline-block;background:var(--jingga);color:#fff;border:none;padding:13px 22px;font-size:1.05rem;border-radius:12px;cursor:pointer;font-weight:bold;margin-top:10px;min-height:48px}
+.btn.biru{background:var(--laut)}
+.btn.hijau{background:var(--hijau)}
+.btn.merah{background:var(--merah)}
+.btn.kecil{padding:9px 14px;font-size:.92rem;min-height:42px}
+.btn:disabled{opacity:.5;cursor:default}
+.tabbar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.tabbar button{flex:1 1 130px;padding:10px 6px;border-radius:10px;border:2px solid var(--jingga);background:#fff;color:#9a5a00;font-weight:bold;cursor:pointer;font-size:.92rem}
+.tabbar button.aktif{background:var(--jingga);color:#fff}
+.tahap{display:none}
+.tahap.aktif{display:block}
+input[type=text],input[type=number],select{width:100%;padding:11px;border:2px solid #b9d6e4;border-radius:10px;font-size:1rem;margin:4px 0 10px;background:#fff}
+input[type=range]{width:100%;height:36px}
+label{font-weight:bold;font-size:.95rem}
+.soal{background:#f4fbff;border:2px solid #cfe8f5;border-radius:14px;padding:14px;margin-bottom:12px}
+.pilihan label{display:block;font-weight:normal;background:#fff;border:2px solid #dceef7;border-radius:10px;padding:9px 12px;margin:6px 0;cursor:pointer}
+.pilihan input{margin-right:8px}
+.benar{color:var(--hijau);font-weight:bold}
+.salah{color:var(--merah);font-weight:bold}
+.info{background:#fff7e0;border:2px solid var(--kuning);border-radius:12px;padding:12px;margin:10px 0}
+.sukses{background:#e6f7ee;border:2px solid var(--hijau);border-radius:12px;padding:12px;margin:10px 0}
+.langkah{display:none;background:#eefaff;border-left:6px solid var(--laut2);padding:10px 14px;margin:8px 0;border-radius:0 10px 10px 0}
+.langkah.tampil{display:block}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{border:1px solid #cfe0ea;padding:8px;text-align:left;vertical-align:top}
+th{background:var(--laut);color:#fff}
+.bungkus-tabel{overflow-x:auto}
+.lintasan{position:relative;height:110px;background:linear-gradient(#8ec9e8 55%,#5da85d 55%);border-radius:16px;overflow:hidden;margin:14px 0;border:3px solid #fff;box-shadow:inset 0 0 0 2px #cfe8f5}
+.jalan{position:absolute;left:0;right:0;bottom:14px;height:44px;background:#4a4a4a}
+.jalan:before{content:"";position:absolute;left:0;right:0;top:20px;border-top:4px dashed #fff}
+.mobil{position:absolute;bottom:22px;left:2%;font-size:2.4rem;transition:left .7s ease;z-index:3}
+.mobil.turbo{filter:drop-shadow(-8px 0 6px var(--jingga));transform:scale(1.12)}
+.bendera{position:absolute;bottom:62px;font-size:1.3rem;z-index:2}
+.timer{font-size:1.2rem;font-weight:bold;color:var(--laut)}
+.emoji-pilih button{font-size:2.2rem;background:#fff;border:3px solid #dceef7;border-radius:14px;padding:8px 14px;margin:4px;cursor:pointer}
+.emoji-pilih button.terpilih{border-color:var(--jingga);background:#fff2df}
+footer{text-align:center;padding:18px;font-size:.85rem;color:#5b7482}
+#certBox{background:#fffef5;border:4px double var(--laut);border-radius:8px;padding:34px 26px;text-align:center;margin-top:14px}
+#certBox h2{font-size:1.8rem;color:var(--laut)}
+#certNama{font-size:1.6rem;font-weight:bold;color:#9a5a00;border-bottom:2px solid var(--kuning);display:inline-block;padding:2px 22px;margin:10px 0}
+.kotak-timbangan{text-align:center}
+.nilai-ruas{display:flex;justify-content:space-around;font-weight:bold;margin-top:6px}
+.status-timbang{font-size:1.1rem;font-weight:bold;margin-top:8px}
+@media print{
+  @page{size:A4 landscape;margin:10mm}
+  body *{visibility:hidden}
+  #certBox,#certBox *{visibility:visible}
+  #certBox{position:absolute;left:0;top:0;width:100%;border-width:6px}
+}
+</style>
+</head>
+<body>
+<header>
+  <span class="lencana">FASE D • MATEMATIKA SMP</span>
+  <h1>🌊 Ruang Belajar Spensa</h1>
+  <p>SMP Negeri 1 Wonosari • Gunungkidul</p>
+  <p>Guru Pengampu: Sulistyana, S.Pd., M.Pd.</p>
+</header>
+<nav>
+  <button id="nav-beranda" class="aktif" onclick="showView('beranda')">🏠 Beranda</button>
+  <button id="nav-media" onclick="showView('media')">📚 Media PLSV</button>
+  <button id="nav-balap" onclick="showView('balap')">🏎️ Game Balap</button>
+  <button id="nav-guru" onclick="showView('guru')">👩‍🏫 Dashboard Guru</button>
+</nav>
+<main>
+<!-- ============ BERANDA ============ -->
+<section id="view-beranda" class="tampilan aktif">
+  <div class="kartu" style="text-align:center">
+    <h2>Persamaan Linier Satu Variabel (PLSV) 📐</h2>
+    <p>Selamat datang di ruang belajar matematika SMP Negeri 1 Wonosari bersama Ibu Sulistyana, S.Pd., M.Pd. Di sini kamu akan berpetualang menemukan nilai yang belum diketahui — si <b>x</b> yang misterius — lewat timbangan interaktif, latihan seru, dan balapan cepat. Pilih pintu petualanganmu!</p>
+  </div>
+  <div class="pintu">
+    <div class="kartu">
+      <span class="ikon">🏎️</span>
+      <h3>EDU RACING PLSV</h3>
+      <p>Melaju di lintasan sambil memecahkan persamaan di setiap pos pemeriksaan. Jawab cepat dan tepat untuk melesat ke garis finis dan membawa pulang medali!</p>
+      <button class="btn" onclick="showView('balap')">Mulai Balapan!</button>
+    </div>
+    <div class="kartu biru">
+      <span class="ikon">📚</span>
+      <h3>MEDIA BELAJAR PLSV</h3>
+      <p>Belajar bertahap: mulai dari mengutak-atik timbangan, memahami konsep, melihat contoh, mengerjakan LKPD, kuis, sampai mencetak sertifikatmu sendiri.</p>
+      <button class="btn biru" onclick="showView('media')">Masuk Ruang Belajar!</button>
+    </div>
+  </div>
+</section>
+<!-- ============ MEDIA PLSV ============ -->
+<section id="view-media" class="tampilan">
+  <div class="kartu">
+    <h2>Media Pembelajaran Interaktif PLSV</h2>
+    <p>Matematika SMP • Fase D &nbsp;|&nbsp; Guru: Sulistyana, S.Pd., M.Pd. &nbsp;|&nbsp; SMP Negeri 1 Wonosari</p>
+  </div>
+  <div class="tabbar">
+    <button id="tabbtn-1" class="aktif" onclick="showTab(1)">1. Eksplorasi</button>
+    <button id="tabbtn-2" onclick="showTab(2)">2. Konsep PLSV</button>
+    <button id="tabbtn-3" onclick="showTab(3)">3. Contoh Soal</button>
+    <button id="tabbtn-4" onclick="showTab(4)">4. LKPD Digital</button>
+    <button id="tabbtn-5" onclick="showTab(5)">5. Kuis Mandiri</button>
+    <button id="tabbtn-6" onclick="showTab(6)">6. Refleksi &amp; Sertifikat</button>
+  </div>
+
+  <!-- Tahap 1: Eksplorasi -->
+  <div id="tahap-1" class="tahap aktif">
+    <div class="kartu kotak-timbangan">
+      <h2>Eksplorasi: Rahasia Timbangan Seimbang ⚖️</h2>
+      <p>Bayangkan persamaan sebagai timbangan pasar. Timbangan hanya diam seimbang bila beban di kedua piringan <b>sama berat</b>. Tugasmu: temukan nilai x yang membuat timbangan untuk persamaan <b>x + 4 = 9</b> menjadi seimbang!</p>
+      <svg width="100%" height="230" viewBox="0 0 400 230" role="img" aria-label="Simulasi timbangan">
+        <polygon points="200,90 178,205 222,205" fill="#0b5e8f"></polygon>
+        <rect x="150" y="200" width="100" height="10" rx="4" fill="#17323f"></rect>
+        <circle cx="200" cy="86" r="8" fill="#ffc61a"></circle>
+        <g id="beamGroup">
+          <rect x="60" y="78" width="280" height="9" rx="4" fill="#ff8c1a"></rect>
+          <line x1="85" y1="87" x2="62" y2="125" stroke="#17323f" stroke-width="3"></line>
+          <line x1="85" y1="87" x2="108" y2="125" stroke="#17323f" stroke-width="3"></line>
+          <ellipse cx="85" cy="132" rx="48" ry="11" fill="#0e86c8"></ellipse>
+          <rect x="52" y="102" width="30" height="24" rx="4" fill="#ffc61a" stroke="#9a5a00" stroke-width="2"></rect>
+          <text x="67" y="120" text-anchor="middle" font-size="15" font-weight="bold" fill="#5c3d00">x</text>
+          <rect x="90" y="102" width="30" height="24" rx="4" fill="#ffd9ad" stroke="#9a5a00" stroke-width="2"></rect>
+          <text x="105" y="120" text-anchor="middle" font-size="15" font-weight="bold" fill="#5c3d00">4</text>
+          <line x1="315" y1="87" x2="292" y2="125" stroke="#17323f" stroke-width="3"></line>
+          <line x1="315" y1="87" x2="338" y2="125" stroke="#17323f" stroke-width="3"></line>
+          <ellipse cx="315" cy="132" rx="48" ry="11" fill="#0e86c8"></ellipse>
+          <rect x="300" y="102" width="30" height="24" rx="4" fill="#ffd9ad" stroke="#9a5a00" stroke-width="2"></rect>
+          <text x="315" y="120" text-anchor="middle" font-size="15" font-weight="bold" fill="#5c3d00">9</text>
+        </g>
+      </svg>
+      <div class="nilai-ruas"><span>Ruas kiri: x + 4 = <span id="leftVal">7</span></span><span>Ruas kanan: 9</span></div>
+      <label for="balSlider">Geser untuk menebak nilai x:</label>
+      <input type="range" id="balSlider" min="1" max="10" step="1" value="3" oninput="updateBalance()">
+      <p>Nilai tebakan: <b>x = <span id="balX">3</span></b></p>
+      <p class="status-timbang" id="balStatus">Ruas kiri lebih ringan — timbangan miring ke kanan.</p>
+      <div class="info">💡 Kunci berpikirnya: persamaan itu pernyataan bahwa dua hal bernilai sama. Apa pun yang kita lakukan pada satu ruas, <b>harus</b> kita lakukan juga pada ruas lainnya, supaya kesamaannya tidak rusak.</div>
+      <button class="btn biru" onclick="showTab(2)">Lanjut ke Konsep ➜</button>
+    </div>
+  </div>
+
+  <!-- Tahap 2: Konsep -->
+  <div id="tahap-2" class="tahap">
+    <div class="kartu">
+      <h2>Konsep Persamaan Linier Satu Variabel</h2>
+      <h3>Apa itu PLSV?</h3>
+      <p>PLSV adalah kalimat terbuka yang dihubungkan tanda sama dengan, hanya memuat <b>satu jenis variabel</b>, dan variabel itu <b>berpangkat satu</b>. Disebut kalimat terbuka karena nilai kebenarannya belum pasti — baru ketahuan setelah kita menemukan nilai variabel yang membuatnya benar. Nilai itulah yang disebut <b>penyelesaian</b>.</p>
+      <h3>Bentuk umum</h3>
+      <p style="font-size:1.2rem;text-align:center"><b>ax + b = c</b></p>
+      <ul style="margin-left:20px">
+        <li><b>Variabel</b>: lambang yang nilainya dicari, biasanya ditulis x.</li>
+        <li><b>Koefisien</b>: bilangan yang menempel di depan variabel (a pada contoh di atas).</li>
+        <li><b>Konstanta</b>: bilangan yang berdiri sendiri tanpa variabel (b dan c).</li>
+      </ul>
+      <h3>Prinsip utama: operasi yang setara</h3>
+      <p>Lupakan dulu hafalan trik. Prinsipnya hanya satu, meniru timbangan tadi: <b>kedua ruas boleh ditambah, dikurang, dikali, atau dibagi dengan bilangan yang sama</b> (pembagi tidak boleh nol), dan persamaan yang baru tetap setara dengan yang lama. Kita memakai prinsip ini berulang-ulang sampai variabel sendirian di satu ruas.</p>
+      <div class="info">Contoh mini: x + 4 = 9. Kurangi kedua ruas dengan 4 → x + 4 − 4 = 9 − 4 → x = 5. Tidak ada yang "melompat pagar"; kedua ruas diperlakukan adil, persis seperti timbangan.</div>
+      <button class="btn biru" onclick="showTab(3)">Lanjut ke Contoh Soal ➜</button>
+    </div>
+  </div>
+
+  <!-- Tahap 3: Contoh Soal -->
+  <div id="tahap-3" class="tahap">
+    <div class="kartu">
+      <h2>Contoh Soal &amp; Pembahasan Bertahap</h2>
+      <p>Tekan tombolnya untuk membuka langkah satu demi satu. Coba tebak dulu langkah berikutnya sebelum membukanya!</p>
+    </div>
+    <div class="kartu contoh">
+      <h3>Tipe A — Dasar: tentukan x dari 4x − 5 = 15</h3>
+      <div class="langkah">Langkah 1 — Tambah kedua ruas dengan 5 agar konstanta −5 hilang: 4x − 5 + 5 = 15 + 5.</div>
+      <div class="langkah">Langkah 2 — Sederhanakan: 4x = 20.</div>
+      <div class="langkah">Langkah 3 — Bagi kedua ruas dengan koefisien 4: x = 20 ÷ 4.</div>
+      <div class="langkah">Langkah 4 — Jadi penyelesaiannya <b>x = 5</b>. Periksa: 4(5) − 5 = 15 ✓</div>
+      <button class="btn kecil" onclick="revealNext(this)">Tampilkan langkah berikutnya</button>
+    </div>
+    <div class="kartu contoh">
+      <h3>Tipe B — Variabel di kedua ruas: selesaikan 7x − 4 = 3x + 12</h3>
+      <div class="langkah">Langkah 1 — Kurangi kedua ruas dengan 3x supaya variabel berkumpul di kiri: 7x − 3x − 4 = 12.</div>
+      <div class="langkah">Langkah 2 — Sederhanakan ruas kiri: 4x − 4 = 12.</div>
+      <div class="langkah">Langkah 3 — Tambah kedua ruas dengan 4: 4x = 16.</div>
+      <div class="langkah">Langkah 4 — Bagi kedua ruas dengan 4, diperoleh <b>x = 4</b>. Periksa: 7(4) − 4 = 24 dan 3(4) + 12 = 24 ✓</div>
+      <button class="btn kecil" onclick="revealNext(this)">Tampilkan langkah berikutnya</button>
+    </div>
+    <div class="kartu contoh">
+      <h3>Tipe C — Soal cerita dari Wonosari 🌴</h3>
+      <p>Di Pasar Wonosari, Sari membeli 3 bungkus getuk dengan harga yang sama per bungkus, lalu membayar parkir Rp5.000,00. Total yang ia bayar Rp26.000,00. Berapa harga satu bungkus getuk?</p>
+      <div class="langkah">Langkah 1 — Misalkan x = harga satu bungkus getuk (dalam rupiah). Model matematikanya: 3x + 5.000 = 26.000.</div>
+      <div class="langkah">Langkah 2 — Kurangi kedua ruas dengan 5.000: 3x = 21.000.</div>
+      <div class="langkah">Langkah 3 — Bagi kedua ruas dengan 3: x = 7.000.</div>
+      <div class="langkah">Langkah 4 — Jadi harga satu bungkus getuk adalah <b>Rp7.000,00</b>. Periksa: 3 × Rp7.000 + Rp5.000 = Rp26.000 ✓</div>
+      <button class="btn kecil" onclick="revealNext(this)">Tampilkan langkah berikutnya</button>
+    </div>
+    <div class="kartu"><button class="btn biru" onclick="showTab(4)">Lanjut ke LKPD Digital ➜</button></div>
+  </div>
+  <!-- Tahap 4: LKPD -->
+  <div id="tahap-4" class="tahap">
+    <div class="kartu">
+      <h2>LKPD Digital — Pasangan Persamaan &amp; Penyelesaiannya</h2>
+      <p>Kerjakan di buku tulismu dulu dengan prinsip operasi setara, lalu pilih nilai x yang menurutmu tepat untuk setiap persamaan.</p>
+      <label for="lkNama">Nama siswa:</label>
+      <input type="text" id="lkNama" placeholder="Tulis namamu">
+      <div class="soal"><p><b>1.</b> 2x + 6 = 14</p>
+        <select id="lk1"><option value="">-- Pilih nilai x --</option><option value="2">x = 2</option><option value="4">x = 4</option><option value="6">x = 6</option><option value="8">x = 8</option></select>
+        <p id="fb-lk1"></p></div>
+      <div class="soal"><p><b>2.</b> 5x − 7 = 18</p>
+        <select id="lk2"><option value="">-- Pilih nilai x --</option><option value="3">x = 3</option><option value="5">x = 5</option><option value="7">x = 7</option><option value="9">x = 9</option></select>
+        <p id="fb-lk2"></p></div>
+      <div class="soal"><p><b>3.</b> 3x + 4 = 2x + 11</p>
+        <select id="lk3"><option value="">-- Pilih nilai x --</option><option value="4">x = 4</option><option value="6">x = 6</option><option value="7">x = 7</option><option value="9">x = 9</option></select>
+        <p id="fb-lk3"></p></div>
+      <div class="soal"><p><b>4.</b> 4(x − 1) = 20</p>
+        <select id="lk4"><option value="">-- Pilih nilai x --</option><option value="3">x = 3</option><option value="6">x = 6</option><option value="8">x = 8</option><option value="10">x = 10</option></select>
+        <p id="fb-lk4"></p></div>
+      <button class="btn" onclick="checkLKPD()">Periksa Jawaban LKPD</button>
+      <p id="lkScore" style="margin-top:10px"></p>
+      <button class="btn biru" onclick="showTab(5)">Lanjut ke Kuis Mandiri ➜</button>
+    </div>
+  </div>
+
+  <!-- Tahap 5: Kuis -->
+  <div id="tahap-5" class="tahap">
+    <div class="kartu">
+      <h2>Kuis Mandiri PLSV 📝</h2>
+      <p>Jawab kelima soal berikut dengan tenang dan teliti. Skor langsung tampil setelah kamu mengirim jawaban.</p>
+      <label for="qzNama">Nama lengkap:</label>
+      <input type="text" id="qzNama" placeholder="Nama siswa">
+      <label for="qzKelas">Kelas:</label>
+      <input type="text" id="qzKelas" placeholder="Tulis kelasmu, misalnya 7A, 8B, atau 9C">
+      <div class="soal"><p><b>Soal 1.</b> Penyelesaian dari 2x + 8 = 20 adalah …</p>
+        <div class="pilihan">
+          <label><input type="radio" name="q1" value="a">x = 4</label>
+          <label><input type="radio" name="q1" value="b">x = 6</label>
+          <label><input type="radio" name="q1" value="c">x = 8</label>
+          <label><input type="radio" name="q1" value="d">x = 14</label>
+        </div><p id="fb-q1"></p></div>
+      <div class="soal"><p><b>Soal 2.</b> Nilai x yang memenuhi 5x − 3 = 2x + 12 adalah …</p>
+        <div class="pilihan">
+          <label><input type="radio" name="q2" value="a">x = 3</label>
+          <label><input type="radio" name="q2" value="b">x = 7</label>
+          <label><input type="radio" name="q2" value="c">x = 5</label>
+          <label><input type="radio" name="q2" value="d">x = 9</label>
+        </div><p id="fb-q2"></p></div>
+      <div class="soal"><p><b>Soal 3.</b> Rani membeli 4 bungkus jajan pasar dan 1 botol minum seharga Rp6.000,00. Total belanjanya Rp34.000,00. Jika x adalah harga satu bungkus jajan, model persamaan yang tepat adalah …</p>
+        <div class="pilihan">
+          <label><input type="radio" name="q3" value="a">4x − 6.000 = 34.000</label>
+          <label><input type="radio" name="q3" value="b">4x + 6.000 = 34.000</label>
+          <label><input type="radio" name="q3" value="c">x + 4 + 6.000 = 34.000</label>
+          <label><input type="radio" name="q3" value="d">6.000x + 4 = 34.000</label>
+        </div><p id="fb-q3"></p></div>
+      <div class="soal"><p><b>Soal 4.</b> Nilai x dari 8x − 5 = 3x + 15 adalah …</p>
+        <div class="pilihan">
+          <label><input type="radio" name="q4" value="a">x = 2</label>
+          <label><input type="radio" name="q4" value="b">x = 6</label>
+          <label><input type="radio" name="q4" value="c">x = 10</label>
+          <label><input type="radio" name="q4" value="d">x = 4</label>
+        </div><p id="fb-q4"></p></div>
+      <div class="soal"><p><b>Soal 5.</b> Nilai x dari −2x + 10 = 4 adalah …</p>
+        <div class="pilihan">
+          <label><input type="radio" name="q5" value="a">x = −3</label>
+          <label><input type="radio" name="q5" value="b">x = 7</label>
+          <label><input type="radio" name="q5" value="c">x = 3</label>
+          <label><input type="radio" name="q5" value="d">x = −7</label>
+        </div><p id="fb-q5"></p></div>
+      <button class="btn hijau" onclick="submitQuiz()">Kirim Jawaban Kuis</button>
+      <p id="qzScore" style="margin-top:10px"></p>
+      <button class="btn biru" onclick="showTab(6)">Lanjut ke Refleksi &amp; Sertifikat ➜</button>
+    </div>
+  </div>
+
+  <!-- Tahap 6: Refleksi & Sertifikat -->
+  <div id="tahap-6" class="tahap">
+    <div class="kartu">
+      <h2>Refleksi Pembelajaran 🌈</h2>
+      <p>Bagaimana perasaanmu setelah belajar PLSV hari ini?</p>
+      <div class="emoji-pilih">
+        <button type="button" data-emoji="😃" data-label="Paham dan senang" onclick="pickReflection(this)">😃</button>
+        <button type="button" data-emoji="👍" data-label="Cukup paham" onclick="pickReflection(this)">👍</button>
+        <button type="button" data-emoji="🤔" data-label="Masih perlu berlatih" onclick="pickReflection(this)">🤔</button>
+      </div>
+      <p id="rfText">Belum memilih — ketuk salah satu emoji di atas.</p>
+      <label for="rfNama">Nama siswa lengkap:</label>
+      <input type="text" id="rfNama" placeholder="Nama untuk sertifikat">
+      <button class="btn" onclick="printCertificate()">🖨️ Cetak Sertifikat Kelulusan Digital</button>
+      <div id="certBox">
+        <p>🏅 SERTIFIKAT KELULUSAN DIGITAL 🏅</p>
+        <h2>Ruang Belajar Spensa</h2>
+        <p>SMP Negeri 1 Wonosari, Gunungkidul</p>
+        <p>Diberikan kepada:</p>
+        <p id="certNama">— Nama Siswa —</p>
+        <p>yang telah menyelesaikan pembelajaran interaktif<br><b>Persamaan Linier Satu Variabel (PLSV)</b><br>Matematika SMP • Fase D</p>
+        <p id="certTanggal">Tanggal: —</p>
+        <p style="margin-top:18px">Guru Pengampu,<br><br><b>Sulistyana, S.Pd., M.Pd.</b></p>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ============ GAME BALAP ============ -->
+<section id="view-balap" class="tampilan">
+  <div class="kartu" id="raceConfig">
+    <span class="lencana">KONFIGURASI GAME BALAP</span>
+    <h2>Pengaturan Edu Racing PLSV 🏁</h2>
+    <p>Atur balapanmu. Di setiap pos pemeriksaan (checkpoint) ada satu soal PLSV yang harus dijawab dengan mengetik angkanya. Jawaban benar membuat mobilmu melaju; jawaban salah boleh dicoba lagi, tetapi skor dihitung dari jawaban yang benar <b>pada percobaan pertama</b> di tiap checkpoint.</p>
+    <label for="rcNama">Nama pemain / siswa:</label>
+    <input type="text" id="rcNama" placeholder="Nama pemain">
+    <label for="rcCount">Jumlah checkpoint / soal:</label>
+    <select id="rcCount">
+      <option value="3">3 soal — Lintasan Pendek</option>
+      <option value="5" selected>5 soal — Lintasan Sedang</option>
+      <option value="10">10 soal — Lintasan Penuh</option>
+    </select>
+    <label for="rcLevel">Tingkat kesulitan:</label>
+    <select id="rcLevel">
+      <option value="mudah">Mudah — bentuk ax + b = c</option>
+      <option value="sedang" selected>Sedang — bentuk ax + b = cx + d</option>
+      <option value="sulit">Sulit — bentuk a(bx + c) = d</option>
+    </select>
+    <div class="info"><b>Tujuan:</b> menentukan nilai x pada persamaan linier satu variabel dengan cepat dan tepat untuk membawa mobilmu sampai garis finis.</div>
+    <button class="btn" onclick="startRace()">🚀 Gas! Mulai Balapan!</button>
+  </div>
+  <div class="kartu" id="racePlay" style="display:none">
+    <p><span class="timer">⏱️ Waktu: <span id="rcTime">0</span> detik</span> &nbsp;|&nbsp; Checkpoint: <b><span id="rcProg">0/0</span></b></p>
+    <div class="lintasan"><div class="jalan"></div><div id="rcFlags"></div><div class="mobil" id="rcCar">🏎️</div></div>
+    <div class="soal">
+      <p id="rcQuestion" style="font-size:1.2rem;font-weight:bold"></p>
+      <label for="rcAnswer">Nilai x =</label>
+      <input type="number" id="rcAnswer" placeholder="Ketik jawabanmu (bilangan bulat)">
+      <button class="btn hijau" onclick="checkRace()">Jawab &amp; Melaju!</button>
+      <p id="rcMsg" style="margin-top:8px"></p>
+    </div>
+  </div>
+  <div class="kartu" id="raceFinish" style="display:none;text-align:center">
+    <h2>🏁 FINIS!</h2>
+    <p id="rcResult" style="font-size:1.15rem"></p>
+    <button class="btn biru" onclick="resetRace()">Balapan Lagi</button>
+  </div>
+</section>
+
+<!-- ============ DASHBOARD GURU ============ -->
+<section id="view-guru" class="tampilan">
+  <div class="kartu">
+    <span class="lencana">DASHBOARD GURU</span>
+    <h2>Pengelolaan Hasil Belajar PLSV</h2>
+    <p>Guru: Sulistyana, S.Pd., M.Pd. | SMP Negeri 1 Wonosari</p>
+    <p>Hasil di bawah dibaca dari penyimpanan perangkat ini (peramban yang sama yang dipakai siswa mengerjakan kuis, LKPD, refleksi, dan game).</p>
+    <button class="btn kecil hijau" onclick="exportCSV()">⬇️ Ekspor CSV</button>
+    <button class="btn kecil biru" onclick="copyLink()">🔗 Salin Link</button>
+    <button class="btn kecil merah" onclick="clearData()">🗑️ Hapus Semua Data</button>
+    <p id="dashMsg" style="margin-top:8px"></p>
+  </div>
+  <div class="kartu">
+    <h3>Rekap Nilai &amp; Aktivitas Siswa</h3>
+    <div class="bungkus-tabel">
+      <table>
+        <thead><tr><th>Nama Siswa</th><th>Modul / Mode</th><th>Skor / Nilai</th><th>Refleksi / Catatan</th><th>Tanggal</th></tr></thead>
+        <tbody id="dashBody"></tbody>
+      </table>
+    </div>
+    <p id="dashEmpty">Belum ada hasil yang tersimpan di perangkat ini. Hasil akan muncul setelah siswa mengerjakan LKPD, kuis, refleksi, atau game balap di peramban ini.</p>
+  </div>
+</section>
+</main>
+<footer>© 2026 Ruang Belajar Spensa • SMP Negeri 1 Wonosari — Sulistyana, S.Pd., M.Pd.</footer>
+
+<script>
+var STORAGE_KEY = 'spensa_plsv_results';
+function todayStr(){var d=new Date();function p(n){return (n<10?'0':'')+n;}return p(d.getDate())+'/'+p(d.getMonth()+1)+'/'+d.getFullYear();}
+function todayLong(){var bln=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];var d=new Date();return d.getDate()+' '+bln[d.getMonth()]+' '+d.getFullYear();}
+function loadResults(){try{var r=JSON.parse(localStorage.getItem(STORAGE_KEY));return Array.isArray(r)?r:[];}catch(e){return[];}}
+function saveResult(nama,modul,skor,catatan){var arr=loadResults();arr.push({nama:nama||'Tanpa nama',modul:modul,skor:skor,catatan:catatan||'',tanggal:todayStr()});try{localStorage.setItem(STORAGE_KEY,JSON.stringify(arr));}catch(e){}}
+function showView(v){var views=['beranda','media','balap','guru'];for(var i=0;i<views.length;i++){document.getElementById('view-'+views[i]).classList.toggle('aktif',views[i]===v);document.getElementById('nav-'+views[i]).classList.toggle('aktif',views[i]===v);}if(v==='guru'){renderDash();}window.scrollTo(0,0);}
+function showTab(n){for(var i=1;i<=6;i++){document.getElementById('tahap-'+i).classList.toggle('aktif',i===n);document.getElementById('tabbtn-'+i).classList.toggle('aktif',i===n);}if(n===6){var q=document.getElementById('qzNama').value.trim();if(q&&!document.getElementById('rfNama').value.trim()){document.getElementById('rfNama').value=q;}updateCert();}}
+/* --- Timbangan --- */
+function updateBalance(){
+  var x=parseInt(document.getElementById('balSlider').value,10);
+  var left=x+4;var diff=left-9;
+  document.getElementById('balX').textContent=x;
+  document.getElementById('leftVal').textContent=left;
+  var angle=diff*3;if(angle>14)angle=14;if(angle<-14)angle=-14;
+  document.getElementById('beamGroup').setAttribute('transform','rotate('+angle+' 200 86)');
+  var st=document.getElementById('balStatus');
+  if(diff===0){st.innerHTML='<span class="benar">SEIMBANG! 🎉 x = 5 memang membuat ruas kiri sama dengan ruas kanan: 5 + 4 = 9.</span>';}
+  else if(diff<0){st.textContent='Ruas kiri lebih ringan ('+left+' < 9) — timbangan miring ke kanan. Naikkan nilai x!';}
+  else{st.textContent='Ruas kiri lebih berat ('+left+' > 9) — timbangan miring ke kiri. Turunkan nilai x!';}
+}
+/* --- Contoh soal --- */
+function revealNext(btn){
+  var card=btn.parentElement;var steps=card.querySelectorAll('.langkah');
+  for(var i=0;i<steps.length;i++){if(!steps[i].classList.contains('tampil')){steps[i].classList.add('tampil');if(i===steps.length-1){btn.textContent='Semua langkah terbuka ✓';btn.disabled=true;}return;}}
+  btn.textContent='Semua langkah terbuka ✓';btn.disabled=true;
+}
+/* --- LKPD --- */
+var LKPD_KEY={lk1:'4',lk2:'5',lk3:'7',lk4:'6'};
+function checkLKPD(){
+  var ids=['lk1','lk2','lk3','lk4'];var benar=0;
+  for(var i=0;i<ids.length;i++){
+    var v=document.getElementById(ids[i]).value;var fb=document.getElementById('fb-'+ids[i]);
+    if(v===''){fb.innerHTML='<span class="salah">Belum dipilih — pilih dulu nilai x-nya ya.</span>';}
+    else if(v===LKPD_KEY[ids[i]]){benar++;fb.innerHTML='<span class="benar">Benar! ✓ x = '+LKPD_KEY[ids[i]]+'</span>';}
+    else{fb.innerHTML='<span class="salah">Belum tepat. Coba periksa kembali langkah operasi setaramu.</span>';}
+  }
+  var skor=Math.round(benar/4*100);
+  document.getElementById('lkScore').innerHTML='<span class="'+(benar===4?'benar':'')+'">Skor LKPD: <b>'+skor+'</b> (benar '+benar+' dari 4 soal). Hasil ini tersimpan ke Dashboard Guru.</span>';
+  var nama=document.getElementById('lkNama').value.trim()||document.getElementById('qzNama').value.trim();
+  saveResult(nama,'LKPD Digital',skor,'Benar '+benar+' dari 4 soal');
+}
+/* --- Kuis --- */
+var QUIZ_KEY={q1:'b',q2:'c',q3:'b',q4:'d',q5:'c'};
+var QUIZ_ANS={q1:'x = 6',q2:'x = 5',q3:'4x + 6.000 = 34.000',q4:'x = 4',q5:'x = 3'};
+function quizPick(name){var els=document.getElementsByName(name);for(var i=0;i<els.length;i++){if(els[i].checked)return els[i].value;}return '';}
+function submitQuiz(){
+  var ids=['q1','q2','q3','q4','q5'];var benar=0;
+  for(var i=0;i<ids.length;i++){
+    var v=quizPick(ids[i]);var fb=document.getElementById('fb-'+ids[i]);
+    if(v===''){fb.innerHTML='<span class="salah">Belum dijawab.</span>';}
+    else if(v===QUIZ_KEY[ids[i]]){benar++;fb.innerHTML='<span class="benar">Benar! ✓ Jawaban: '+QUIZ_ANS[ids[i]]+'</span>';}
+    else{fb.innerHTML='<span class="salah">Kurang tepat. Jawaban yang benar: '+QUIZ_ANS[ids[i]]+'</span>';}
+  }
+  var skor=benar*20;
+  var nama=document.getElementById('qzNama').value.trim();
+  var kelas=document.getElementById('qzKelas').value.trim();
+  document.getElementById('qzScore').innerHTML='Skor kuismu: <b>'+skor+'</b> dari 100 (benar '+benar+' dari 5 soal). '+(skor>=80?'Hebat, kamu sudah menguasai PLSV! 🎉':(skor>=60?'Bagus — sedikit lagi, pelajari soal yang masih salah ya.':'Tidak apa-apa, ayo kembali ke tahap Konsep &amp; Contoh lalu coba lagi.'))+' Hasil tersimpan ke Dashboard Guru.';
+  saveResult(nama,'Kuis Mandiri',skor,'Kelas '+(kelas||'-')+' • Benar '+benar+' dari 5 soal');
+}
+/* --- Refleksi & sertifikat --- */
+var reflection={emoji:'',label:''};
+function pickReflection(btn){
+  var all=document.querySelectorAll('.emoji-pilih button');for(var i=0;i<all.length;i++)all[i].classList.remove('terpilih');
+  btn.classList.add('terpilih');reflection.emoji=btn.getAttribute('data-emoji');reflection.label=btn.getAttribute('data-label');
+  document.getElementById('rfText').innerHTML='Pilihanmu: '+reflection.emoji+' — '+reflection.label;
+}
+function updateCert(){
+  var nama=document.getElementById('rfNama').value.trim();
+  document.getElementById('certNama').textContent=nama?nama:'— Nama Siswa —';
+  document.getElementById('certTanggal').textContent='Wonosari, '+todayLong();
+}
+function printCertificate(){
+  updateCert();
+  var nama=document.getElementById('rfNama').value.trim();
+  if(reflection.emoji){saveResult(nama,'Refleksi','—',reflection.emoji+' '+reflection.label);}
+  window.print();
+}
+document.getElementById('rfNama').addEventListener('input',updateCert);
+/* --- Generator soal balap --- */
+function rnd(min,max){return Math.floor(Math.random()*(max-min+1))+min;}
+function genMudah(){var x=rnd(2,9);var a=rnd(2,6);var b=rnd(2,12);var c=a*x+b;return{teks:'Tentukan nilai x dari '+a+'x + '+b+' = '+c,ans:x};}
+function genSedang(){var x=rnd(2,9);var a=rnd(4,8);var c=rnd(1,a-2);var b=rnd(2,10);var d=(a-c)*x+b;return{teks:'Tentukan nilai x dari '+a+'x + '+b+' = '+c+'x + '+d,ans:x};}
+function genSulit(){var x=rnd(2,8);var bi=rnd(2,4);var ci=rnd(1,6);var a=rnd(2,4);var d=a*(bi*x+ci);return{teks:'Tentukan nilai x dari '+a+'('+bi+'x + '+ci+') = '+d,ans:x};}
+function genSoal(level){if(level==='mudah')return genMudah();if(level==='sulit')return genSulit();return genSedang();}
+/* --- Game balap --- */
+var race=null;
+function startRace(){
+  var total=parseInt(document.getElementById('rcCount').value,10);
+  var level=document.getElementById('rcLevel').value;
+  race={nama:document.getElementById('rcNama').value.trim(),total:total,level:level,solved:0,firstTry:0,firstTryNow:true,cur:null,detik:0,selesai:false};
+  document.getElementById('raceConfig').style.display='none';
+  document.getElementById('raceFinish').style.display='none';
+  document.getElementById('racePlay').style.display='block';
+  var flags='';for(var i=1;i<=total;i++){flags+='<span class="bendera" style="left:'+(4+i*(90/total))+'%">🚩</span>';}
+  document.getElementById('rcFlags').innerHTML=flags;
+  race.timer=setInterval(function(){race.detik++;document.getElementById('rcTime').textContent=race.detik;},1000);
+  nextCheckpoint();
+}
+function nextCheckpoint(){
+  race.cur=genSoal(race.level);race.firstTryNow=true;race.locked=false;
+  document.getElementById('rcQuestion').textContent='Checkpoint '+(race.solved+1)+': '+race.cur.teks;
+  document.getElementById('rcAnswer').value='';
+  document.getElementById('rcMsg').textContent='';
+  document.getElementById('rcProg').textContent=race.solved+'/'+race.total;
+  document.getElementById('rcCar').style.left=(2+race.solved*(90/race.total))+'%';
+}
+function checkRace(){
+  if(!race||race.selesai||race.locked)return;
+  var v=document.getElementById('rcAnswer').value.trim();
+  var msg=document.getElementById('rcMsg');var car=document.getElementById('rcCar');
+  if(v===''){msg.innerHTML='<span class="salah">Isi dulu nilai x-nya ya.</span>';return;}
+  if(parseInt(v,10)===race.cur.ans){
+    race.locked=true;
+    if(race.firstTryNow)race.firstTry++;
+    race.solved++;
+    car.classList.add('turbo');
+    setTimeout(function(){car.classList.remove('turbo');},800);
+    msg.innerHTML='<span class="benar">Benar! 🚀 Turbo aktif, mobilmu melaju!</span>';
+    if(race.solved>=race.total){finishRace();}
+    else{setTimeout(nextCheckpoint,700);}
+  }else{
+    race.firstTryNow=false;
+    msg.innerHTML='<span class="salah">Belum tepat — mobilmu menunggu. Periksa lagi hitunganmu lalu coba lagi!</span>';
+  }
+}
+function finishRace(){
+  race.selesai=true;clearInterval(race.timer);
+  document.getElementById('rcProg').textContent=race.total+'/'+race.total;
+  document.getElementById('rcCar').style.left='92%';
+  var pct=Math.round(race.firstTry/race.total*100);
+  var medali=pct>=90?'🥇 Medali Emas':(pct>=70?'🥈 Medali Perak':(pct>=50?'🥉 Medali Perunggu':'🏁 Finis — terus berlatih ya!'));
+  var levelLabel=race.level==='mudah'?'Mudah':(race.level==='sulit'?'Sulit':'Sedang');
+  setTimeout(function(){
+    document.getElementById('racePlay').style.display='none';
+    document.getElementById('raceFinish').style.display='block';
+    document.getElementById('rcResult').innerHTML='Skor: <b>'+pct+'</b> dari 100 ('+race.firstTry+' dari '+race.total+' checkpoint benar pada percobaan pertama)<br>Waktu tempuh: '+race.detik+' detik • Tingkat: '+levelLabel+'<br><span style="font-size:1.5rem">'+medali+'</span>';
+  },700);
+  saveResult(race.nama,'Edu Racing PLSV',pct,'Tingkat '+levelLabel+' • '+race.total+' checkpoint • '+race.detik+' detik • '+medali);
+}
+function resetRace(){
+  if(race&&race.timer)clearInterval(race.timer);race=null;
+  document.getElementById('racePlay').style.display='none';
+  document.getElementById('raceFinish').style.display='none';
+  document.getElementById('raceConfig').style.display='block';
+}
+/* --- Dashboard guru --- */
+function escHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function renderDash(){
+  var arr=loadResults();var tb=document.getElementById('dashBody');tb.innerHTML='';
+  document.getElementById('dashEmpty').style.display=arr.length?'none':'block';
+  for(var i=0;i<arr.length;i++){
+    var r=arr[i];var tr=document.createElement('tr');
+    tr.innerHTML='<td>'+escHtml(r.nama)+'</td><td>'+escHtml(r.modul)+'</td><td>'+escHtml(r.skor)+'</td><td>'+escHtml(r.catatan)+'</td><td>'+escHtml(r.tanggal)+'</td>';
+    tb.appendChild(tr);
+  }
+}
+function csvCell(v){return '"'+String(v==null?'':v).replace(/"/g,'""')+'"';}
+function buildCSV(){
+  var arr=loadResults();var lines=['Nama,Modul/Mode,Skor,Refleksi/Catatan,Tanggal'];
+  for(var i=0;i<arr.length;i++){var r=arr[i];lines.push([csvCell(r.nama),csvCell(r.modul),csvCell(r.skor),csvCell(r.catatan),csvCell(r.tanggal)].join(','));}
+  return lines.join('\n');
+}
+function exportCSV(){
+  var blob=new Blob([buildCSV()],{type:'text/csv'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='hasil-plsv-spensa.csv';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(a.href);},1000);
+  document.getElementById('dashMsg').textContent='Berkas CSV diunduh: hasil-plsv-spensa.csv';
+}
+function copyLink(){
+  var link=location.href;var done=function(){document.getElementById('dashMsg').textContent='Tautan halaman ini tersalin — bagikan ke siswa lewat grup kelas.';};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(link).then(done,function(){fallbackCopy(link);done();});}
+  else{fallbackCopy(link);done();}
+}
+function fallbackCopy(text){var ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);}
+function clearData(){
+  if(confirm('Hapus SEMUA data hasil belajar yang tersimpan di perangkat ini? Tindakan ini tidak dapat dibatalkan.')){
+    try{localStorage.removeItem(STORAGE_KEY);}catch(e){}
+    renderDash();document.getElementById('dashMsg').textContent='Semua data hasil di perangkat ini sudah dihapus.';
+  }
+}
+/* --- Inisialisasi --- */
+updateBalance();updateCert();renderDash();
+</script>
+</body>
+</html>
